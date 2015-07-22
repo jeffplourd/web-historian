@@ -10,8 +10,11 @@ var _ = require('underscore');
  */
 
 exports.paths = {
+  //client files
   siteAssets: path.join(__dirname, '../web/public'),
+  //archives site files
   archivedSites: path.join(__dirname, '../archives/sites'),
+  //list of sites
   list: path.join(__dirname, '../archives/sites.txt')
 };
 
