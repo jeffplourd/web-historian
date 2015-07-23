@@ -9,7 +9,7 @@ var _ = require('underscore');
  * customize it in any way you wish.
  */
 
-exports.paths = {
+exports.paths = paths = {
   //client files
   siteAssets: path.join(__dirname, '../web/public'),
   //archives site files
@@ -28,17 +28,47 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = readListOfUrls = function(callback){
+  // read the list (string of each url)
+  fs.readFile(paths.list, {encoding: 'utf8'}, function(error, data) {
+    // store each url as an element in an array
+    var listOfUrls = data.split('\n');
+    callback(listOfUrls);
+  })
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = isUrlInList = function(targetUrl, callback){
+  // get the list in array format
+  readListOfUrls(function(listOfUrls) {
+    var hasUrl = _.contains(listOfUrls, targetUrl);
+    callback(hasUrl);
+  });
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(targetUrl, callback){
+  // check if already in list
+  isUrlInList(targetUrl, function(is) {
+    if (!is) {
+      //add a URL to the list
+      fs.appendFile(paths.list, targetUrl + "\\n", function(err) {
+        if(err) throw err;
+        callback();
+      });
+    } 
+  });
 };
 
-exports.isUrlArchived = function(){
+exports.isUrlArchived = function(targetArchive, callback){
+  // checks meta data about file
+  fs.stat(paths.archivedSites + "/" + targetArchive, function(err, stats){
+    // if there's no metadata, then file doesn't exist
+    stats === undefined ? callback(false) : callback(true);
+  });
 };
 
 exports.downloadUrls = function(){
 };
+
+
+
+

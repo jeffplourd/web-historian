@@ -1,3 +1,4 @@
+
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var url = require('url');
@@ -18,5 +19,20 @@ exports.handleRequest = function (req, res) {
     http_helpers.serveAssets(res, pathname, function() {});
   }
 
+  if(req.method === "POST") {
+    var userAddedUrl = '';
+    req.on('data', function(data) {
+      userAddedUrl += data;
+    });
+    req.on('end', function() {
+      console.log(userAddedUrl.toString('utf8').slice(4));
+      // check to see if it's in sites folder
+        // if it is, then send file to client
+        // if it isn't, then send fileHeader 404 and maybe 'loading.html'
+    });
+
+  }
+
   // res.end(archive.paths.list);
 };
+ 
