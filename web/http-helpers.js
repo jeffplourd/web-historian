@@ -34,13 +34,10 @@ exports.serveAssets = function(res, asset, callback) {
 };
 
 exports.serveSite = function (res, userPath) {
-  fs.readFile(archive.paths.archivedSites + "/" + userPath, function(err, data){
-    if (err) {
-      throw err;
-    } else {
-      res.writeHead(200, headers);
-      res.end(data);
-    }
+  fs.readFile((archive.paths.archivedSites + userPath), function(err, data){
+    headers['Content-Type'] = 'text/html';
+    res.writeHead(200, headers);
+    res.end(data);
   });
 };
 

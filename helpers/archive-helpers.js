@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-
+var request = require('request');
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -50,7 +50,7 @@ exports.addUrlToList = function(targetUrl, callback){
   isUrlInList(targetUrl, function(is) {
     if (!is) {
       //add a URL to the list
-      fs.appendFile(paths.list, targetUrl + "\\n", function(err) {
+      fs.appendFile(paths.list, targetUrl + "\n", function(err) {
         if(err) throw err;
         callback();
       });
@@ -58,7 +58,7 @@ exports.addUrlToList = function(targetUrl, callback){
   });
 };
 
-exports.isUrlArchived = function(targetArchive, callback){
+exports.isUrlArchived = isUrlArchived = function(targetArchive, callback){
   // checks meta data about file
   fs.stat(paths.archivedSites + "/" + targetArchive, function(err, stats){
     // if there's no metadata, then file doesn't exist
@@ -66,7 +66,29 @@ exports.isUrlArchived = function(targetArchive, callback){
   });
 };
 
-exports.downloadUrls = function(){
+exports.downloadUrls = function(listOfUrls){
+  // loop through list of URLs
+  _.each(listOfUrls, function(url) {
+    // check if archived
+    isUrlArchived(url, function(exists) {
+      // if not, make a get request to the site
+      if(!exists) {
+        request('https://' + url, function(error, response, body) {
+          if(error) throw error;
+          if(!error && response.statusCode === 200) {
+            fs.writeFile(paths.archivedSites + '/' + url, body, function() {
+              console.log('this worked');
+            });
+          }
+        })
+        // fs.writeFile(paths.archivedSites + '/' + url, 'google',function() {
+        //   console.log('this worked');
+        // })
+      }
+    })
+
+  });
+      // on end of request, write data to site folder
 };
 
 
